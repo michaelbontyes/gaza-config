@@ -8,45 +8,16 @@ TRUNCATE TABLE hl7_in_error;
 TRUNCATE TABLE hl7_in_queue;
 TRUNCATE TABLE notification_alert_recipient;
 TRUNCATE TABLE notification_alert;
-SET
-   FOREIGN_KEY_CHECKS = 1;
-
--- ---------------------------------------------------------------------
--- database: openmrs
--- table: audit_log
--- strategy: truncate audit log table
--- ---------------------------------------------------------------------
 TRUNCATE TABLE audit_log;
 
--- ---------------------------------------------------------------------
--- database: openmrs
--- table: users
--- columns: username, password
--- strategy: randomize username and change user password
--- ---------------------------------------------------------------------
-UPDATE
-   users
+TRUNCATE TABLE patient_appointment_audit;
 SET
-   username = concat( 'AnonUSR', char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) ),
-   password = '36ee23ea83437a6954bc35f6bb1ca7c564d9e096bf49180414cb3a38faca0f53be74afec961ccb0311d3125bc9310ca9cec98afa0510d2e62f2812e418b571a5',
-   salt = '26a1b70790d383ffdb2f035a7f90b25794273b8a3f0104b0776db42cb4c98144c3e1e642282b2ec73b240957bcba48ca99bef1954b09d9090e681a584fd20ad7',
-   secret_question = null,
-   secret_answer = null
-WHERE
-   username NOT IN
-   (
-      'admin',
-      'superman',
-      'reports-user',
-      'superman'
-   )
-;
-
+   FOREIGN_KEY_CHECKS = 1;
 -- randomize the person names (given_name and family_name to contain random 8 alpha-numeric characters)
 UPDATE
    person_name
 SET
-   given_name = concat( 'AnnonFN', char(round(rand()* 25) + 65), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) ), middle_name = concat( 'AnnonMN-', char(round(rand()* 25) + 65), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) ), family_name = concat( 'AnnonLN-', char(round(rand()* 25) + 65), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) )
+   given_name = concat( 'AnnonFN-', char(round(rand()* 25) + 65), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) ), middle_name = concat( 'AnnonMN-', char(round(rand()* 25) + 65), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) ), family_name = concat( 'AnnonLN-', char(round(rand()* 25) + 65), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) )
 WHERE
    person_id NOT IN
    (
@@ -101,6 +72,7 @@ SET
 UPDATE
    users
 SET
+   username = concat( 'AnonUSR', char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) ),
    password = 'd45e5f75a92ed88b3ebe1d0868d07e7d69609b232e8a60daddd47ffc26e2825e0481b9e712b5ecf80deb29d26553fd126878a5a26f29e28f92b2cefc02ab9573',
    salt = '77ee0588fa43f003557d7dc26c66448ededc912a928cedc310698bf1839ee703258dcbfa0dbc0583fda93c7a4f60f49bec02afde244ff9d7e222ed30c6ecf81c',
    secret_question = null,
@@ -141,10 +113,10 @@ WHERE
 UPDATE
    person_address
 SET
-   address1 = concat('AnnonAddress1'),
-   county_district = concat('AnnonCountyDistrict'),
-   city_village = concat('AnnonCityVillage'),
-   state_province = concat('AnnonStateProvince'),
+   address1 = concat('Annon-address1-', person_id),
+   county_district = concat('Annon-countyDistrict', person_id),
+   city_village = concat('Annon-cityVillage', person_id),
+   state_province = concat('Annon-stateProvince', person_id),
    date_created = now(),
    date_voided = now();
 --
@@ -244,7 +216,7 @@ UPDATE
      AND pat.name LIKE '%Name%'
      AND pat.format = 'java.lang.String'
 SET
-  pa.value = concat('Annon', char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) );
+  pa.value = concat('Annon-', char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97), char(round(rand()* 25) + 97) );
 
 /* for all person attribute WHERE Phone number is getting captured */
 UPDATE
@@ -265,20 +237,6 @@ SET
 
 /*  as the following comments fields having some sensitive info */
 
--- ---------------------------------------------------------------------
--- database: openmrs
--- table: patient_appointment_audit
--- columns: all
--- strategy: truncate audit table
--- ---------------------------------------------------------------------
-TRUNCATE TABLE patient_appointment_audit;
-
--- ---------------------------------------------------------------------
--- database: openmrs
--- table: obs
--- columns: value_text, comments
--- strategy: replace comments and values with concept datatype "text"
--- ---------------------------------------------------------------------
 UPDATE
    obs
 SET
